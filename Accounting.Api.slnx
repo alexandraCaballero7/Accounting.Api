@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Accounting.Api/Accounting.Api.csproj" />
+  <Project Path="Accounting.Application/Accounting.Application.csproj" />
+  <Project Path="Accounting.Core/Accounting.Core.csproj" />
+  <Project Path="Accounting.Infraestructure/Accounting.Infraestructure.csproj" />
+</Solution>
