@@ -1,6 +1,15 @@
-@Accounting.Api_HostAddress = http://localhost:5186
+@CodeFirstAPI_HostAddress = http://localhost:5186
 
-GET {{Accounting.Api_HostAddress}}/weatherforecast/
-Accept: application/json
 
 ###
+POST {{CodeFirstAPI_HostAddress}}/api/Employee/
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "jdoe@mail.com",
+    "phone": "555-1234",
+    "hireDate": "2024-01-01T00:00:00",
+    "salary": 70500
+}
