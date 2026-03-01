@@ -7,10 +7,10 @@ namespace Accounting.Core.Interfaces
 {
     public interface IEmployeeRepository
     {
-        Task<IEnumerable<EmployeeEntity>> GetEmployees();
-        Task<EmployeeEntity> GetEmployeeByIdAsync(Guid EmployeeId);
-        Task<EmployeeEntity> AddEmployeAsync(EmployeeEntity entity);
-        Task<EmployeeEntity> UpdateEmployeAsync(Guid EmployeeId, EmployeeEntity entity);
-        Task<bool> DeleteEmployeAsync(Guid EmployeeId);
+        Task<IEnumerable<EmployeeEntity>> GetAllEmployeesAsync();
+        Task<EmployeeEntity> GetEmployeeByIdAsync(int EmployeeId);
+        Task<EmployeeEntity> AddEmployeeAsync(EmployeeEntity entity);
+        Task<EmployeeEntity> UpdateEmployeAsync(int EmployeeId, EmployeeEntity entity);
+        Task<bool> DeleteEmployeeAsync(int EmployeeId); 
     }
 }
