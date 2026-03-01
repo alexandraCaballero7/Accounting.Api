@@ -15,7 +15,8 @@ namespace Accounting.Infraestructure.Migrations
                 name: "Employees",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -32,19 +33,21 @@ namespace Accounting.Infraestructure.Migrations
                 name: "Vouchers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     VoucherNumber = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EmployeeId1 = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vouchers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vouchers_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_Vouchers_Employees_EmployeeId1",
+                        column: x => x.EmployeeId1,
                         principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -54,8 +57,9 @@ namespace Accounting.Infraestructure.Migrations
                 name: "VoucherItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VoucherId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VoucherId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Type = table.Column<bool>(type: "bit", nullable: false)
@@ -77,9 +81,9 @@ namespace Accounting.Infraestructure.Migrations
                 column: "VoucherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vouchers_EmployeeId",
+                name: "IX_Vouchers_EmployeeId1",
                 table: "Vouchers",
-                column: "EmployeeId");
+                column: "EmployeeId1");
         }
 
         /// <inheritdoc />

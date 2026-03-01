@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.Infraestructure.Migrations
 {
     [DbContext(typeof(AccountingDbContext))]
-    [Migration("20260227232647_dbinit")]
-    partial class dbinit
+    [Migration("20260301063418_VoucherDescNullableField")]
+    partial class VoucherDescNullableField
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,11 @@ namespace Accounting.Infraestructure.Migrations
 
             modelBuilder.Entity("Accounting.Core.Entities.EmployeeEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -60,19 +62,20 @@ namespace Accounting.Infraestructure.Migrations
 
             modelBuilder.Entity("Accounting.Core.Entities.VoucherEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -89,9 +92,11 @@ namespace Accounting.Infraestructure.Migrations
 
             modelBuilder.Entity("Accounting.Core.Entities.VoucherItemEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
@@ -103,8 +108,8 @@ namespace Accounting.Infraestructure.Migrations
                     b.Property<bool>("Type")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("VoucherId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("VoucherId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

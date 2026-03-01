@@ -10,31 +10,32 @@ namespace Accounting.Infraestructure.Repositories
 {
     public class EmployeeRepository(AccountingDbContext dbContext): IEmployeeRepository
     {
-        public async Task<IEnumerable<EmployeeEntity>>GetEmployees()
+        public async Task<IEnumerable<EmployeeEntity>>GetAllEmployeesAsync()
         { 
             return await dbContext.Employees.ToListAsync();
         }
 
-        public async Task<EmployeeEntity> GetEmployeeByIdAsync(Guid EmployeeId)
+        public async Task<EmployeeEntity> GetEmployeeByIdAsync(int EmployeeId)
         {
             return await dbContext.Employees.FirstOrDefaultAsync(x=>x.Id == EmployeeId);
         }
 
-        public async Task<EmployeeEntity> AddEmployeAsync(EmployeeEntity entity)
+        public async Task<EmployeeEntity> AddEmployeeAsync(EmployeeEntity entity)
         {
-           entity.Id = Guid.NewGuid();
+         
           dbContext.Employees.Add(entity);
           
           await dbContext.SaveChangesAsync();
           return entity;
         }
 
-        public async Task<EmployeeEntity> UpdateEmployeAsync(Guid EmployeeId, EmployeeEntity entity)
+        public async Task<EmployeeEntity> UpdateEmployeAsync(int EmployeeId, EmployeeEntity entity)
         {
            var employee = await dbContext.Employees.FirstOrDefaultAsync(x=> x.Id == EmployeeId);
 
-            if (employee is not  null)
-            { 
+            if (employee is null)
+                return null;
+            
                 employee.FirstName = entity.FirstName;
                 employee.LastName = entity.LastName;
                 employee.Phone = entity.Phone;
@@ -44,12 +45,10 @@ namespace Accounting.Infraestructure.Repositories
 
                 await dbContext.SaveChangesAsync();
                 return employee;
-            }
-
-            return entity;
+            
         }
 
-        public async Task<bool> DeleteEmployeAsync(Guid EmployeeId)
+        public async Task<bool> DeleteEmployeeAsync(int EmployeeId)
         {
             var employee = await dbContext.Employees.FirstOrDefaultAsync(x => x.Id == EmployeeId);
 
