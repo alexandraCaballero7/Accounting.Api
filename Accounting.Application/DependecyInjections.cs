@@ -6,7 +6,7 @@ namespace Accounting.Application
     {
         public static IServiceCollection AddApplicationDI(this IServiceCollection services)
         {
-
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependecyInjections).Assembly));
             return services;
         }
     }

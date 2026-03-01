@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Accounting.Application.Employees.DTOs
+{
+    public record EmployeeResponse(
+        int Id,
+        string FirstName,
+        string LastName,
+        string Email,
+        string Phone,
+        DateTime HireDate,
+        decimal Salary
+    );
+}
+
