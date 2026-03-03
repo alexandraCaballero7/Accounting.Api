@@ -7,11 +7,11 @@ namespace Accounting.Core.Interfaces
 {
     public interface IVoucherRepository
     {
-        Task<IEnumerable<VoucherEntity>> GetVouchers();
-        Task<VoucherEntity> GetVoucherByIdVoucherAsync(int VoucherId);
-        Task<IEnumerable<VoucherEntity>> GetVouchersByIdEmployeeAsync(int EmployeeId);
-        Task<VoucherEntity> AddVoucherAsync(VoucherEntity entity);
-        Task<VoucherEntity> UpdateVoucherAsync(int VoucherId, VoucherEntity entity);
-        Task<bool> DeleteVoucherAsync(int VoucherId);
+        Task<IEnumerable<VoucherEntity>> GetAllVouchersAsync(CancellationToken cancellationToken);
+        Task<VoucherEntity> GetVoucherByIdVoucherAsync(int VoucherId, CancellationToken cancellationToken);
+        Task<IEnumerable<VoucherEntity>> GetVouchersByIdEmployeeAsync(int EmployeeId, CancellationToken cancellationToken);
+        Task<VoucherEntity> AddVoucherAsync(VoucherEntity entity, CancellationToken cancellationToken);
+        Task<VoucherEntity> UpdateVoucherAsync(int VoucherId, VoucherEntity entity, CancellationToken cancellationToken);
+        Task<bool> DeleteVoucherAsync(int VoucherId, CancellationToken cancellationToken);
     }
 }
