@@ -1,8 +1,8 @@
-﻿using Accounting.Application.Employees.Commands.Add;
-using Accounting.Application.Vouchers.Commands.Add;
+﻿using Accounting.Application.Vouchers.Commands.Add;
 using Accounting.Application.Vouchers.Commands.Delete;
 using Accounting.Application.Vouchers.Commands.Update;
 using Accounting.Application.Vouchers.Queries;
+using Accounting.Application.Vouchers.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,45 +14,62 @@ namespace Accounting.Api.Controllers
     public class VouchersController(ISender sender) : ControllerBase
     {
         [HttpGet("")]
-        public async Task<IActionResult> GetAllVouchersAsync( )
+        [ProducesResponseType(typeof(List<VoucherResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllVouchersAsync()
         {
             var result = await sender.Send(new GetAllVouchersQuery());
             return Ok(result);
         }
 
-        [HttpGet("{VoucherId}")]
-        public async Task<IActionResult> GetVoucherByIdAsync(int VoucherId)
+        [HttpGet("{voucherId}")]
+        [ProducesResponseType(typeof(VoucherResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetVoucherByIdAsync(int voucherId)
         {
-            var result = await sender.Send(new GetVoucherByIdQuery(VoucherId));
+            var result = await sender.Send(new GetVoucherByIdQuery(voucherId));
             return Ok(result);
         }
 
-        [HttpGet("Employee/{EmployeeId}")]
-        public async Task<IActionResult> GetVouchersByEmployeeAsync(int EmployeeId)
+        [HttpGet("Employee/{employeeId}")]
+        [ProducesResponseType(typeof(List<VoucherResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetVouchersByEmployeeAsync(int employeeId)
         {
-            var result = await sender.Send(new GetVouchersByEmployeeQuery(EmployeeId));
+            var result = await sender.Send(new GetVouchersByEmployeeQuery(employeeId));
             return Ok(result);
         }
-
 
         [HttpPost("")]
-        public async Task<IActionResult> AddVoucherAsync([FromBody] AddVoucherRequest Voucher)
+        [ProducesResponseType(typeof(VoucherResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AddVoucherAsync([FromBody] AddVoucherRequest voucher)
         {
-            var result = await sender.Send(new AddVouchersCommand(Voucher));
-            return CreatedAtAction(nameof(GetVoucherByIdAsync), new { VoucherId = result.VoucherId }, result);
+            var result = await sender.Send(new AddVouchersCommand(voucher));
+            return CreatedAtAction(nameof(GetVoucherByIdAsync), new { voucherId = result.VoucherId }, result);
         }
 
-        [HttpPut("{VoucherId}")]
-        public async Task<IActionResult> UpdateVoucherByIdAsync(int VoucherId, [FromBody] UpdateVoucherRequest voucher)
+        [HttpPut("{voucherId}")]
+        [ProducesResponseType(typeof(VoucherResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateVoucherByIdAsync(int voucherId, [FromBody] UpdateVoucherRequest voucher)
         {
-            var result = await sender.Send(new UpdateVoucherCommand(VoucherId, voucher));
+            var result = await sender.Send(new UpdateVoucherCommand(voucherId, voucher));
             return Ok(result);
         }
 
-        [HttpDelete("{VoucherId}")]
-        public async Task<IActionResult> DeleteVoucherByIdAsync(int VoucherId)
+        [HttpDelete("{voucherId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteVoucherByIdAsync(int voucherId)
         {
-            var result = await sender.Send(new DeleteVoucherCommand(VoucherId));
+            await sender.Send(new DeleteVoucherCommand(voucherId));
             return NoContent();
         }
     }
