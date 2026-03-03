@@ -2,11 +2,11 @@
 
 namespace Accounting.Application
 {
-    public static class DependecyInjections
+    public static class DependencyInjections
     {
         public static IServiceCollection AddApplicationDI(this IServiceCollection services)
         {
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependecyInjections).Assembly));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjections).Assembly));
             return services;
         }
     }

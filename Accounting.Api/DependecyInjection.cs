@@ -3,12 +3,12 @@ using Accounting.Infraestructure;
 
 namespace Accounting.Api
 {
-    public static class DependecyInjection
+    public static class DependencyInjection
     {
-        public static IServiceCollection AddApiDI(this IServiceCollection services)
+        public static IServiceCollection AddApiDI(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddApplicationDI()
-                .AddInfraestructureDI();
+                .AddInfrastructureDI(configuration);
             return services;
         }
     }

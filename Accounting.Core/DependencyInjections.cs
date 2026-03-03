@@ -2,7 +2,7 @@
 
 namespace Accounting.Core
 {
-    public static class DependecyInjections
+    public static class DependencyInjections
     {
         public static IServiceCollection AddCoreDI(this IServiceCollection services)
         {
