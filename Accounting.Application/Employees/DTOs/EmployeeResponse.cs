@@ -5,7 +5,7 @@ using System.Text;
 namespace Accounting.Application.Employees.DTOs
 {
     public record EmployeeResponse(
-        int Id,
+        int EmployeeId,
         string FirstName,
         string LastName,
         string Email,

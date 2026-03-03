@@ -32,10 +32,10 @@ namespace Accounting.Api.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> AddEmployeeAsync([FromBody] AddEmployeeRequest employee)
+        public async Task<IActionResult> AddEmployeeAsync([FromBody] AddEmployeeRequest Employee)
         {
-            var result = await sender.Send(new AddEmployeeCommand(employee));
-            return Ok(result);
+            var result = await sender.Send(new AddEmployeeCommand(Employee));
+            return CreatedAtAction(nameof(GetAllEmployeeByIdAsync), new { EmployeeId = result.EmployeeId }, result);
         }
 
         [HttpPut("{EmployeeId}")]
@@ -49,7 +49,7 @@ namespace Accounting.Api.Controllers
         public async Task<IActionResult> DeleteEmployeeAsync(int EmployeeId)
         {
             var result = await sender.Send(new DeleteEmployeeCommand(EmployeeId));
-            return Ok(result);
+            return NoContent();
         }
     }
 }
