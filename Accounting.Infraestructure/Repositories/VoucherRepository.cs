@@ -10,91 +10,84 @@ namespace Accounting.Infraestructure.Repositories
 {
     public class VoucherRepository(AccountingDbContext dbContext):IVoucherRepository
     {
-        public async Task<IEnumerable<VoucherEntity>> GetVouchers()
-        {
-            return await dbContext.Vouchers.ToListAsync();
-        }
-
-        public async Task<VoucherEntity> GetVoucherByIdVoucherAsync(int VoucherId)
+        public async Task<IEnumerable<VoucherEntity>> GetAllVouchersAsync(CancellationToken cancellationToken)
         {
             return await dbContext.Vouchers
                 .Include(x=>x.Items)
                 .Include(x=>x.Employee)
-                .FirstOrDefaultAsync(x=>x.Id == VoucherId);
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<VoucherEntity>> GetVouchersByIdEmployeeAsync(int EmployeeId)
+        public async Task<VoucherEntity> GetVoucherByIdVoucherAsync(int VoucherId, CancellationToken cancellationToken)
+        {
+            return await dbContext.Vouchers
+                .Include(x=>x.Items)
+                .Include(x=>x.Employee)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x=>x.Id == VoucherId, cancellationToken);
+        }
+
+        public async Task<IEnumerable<VoucherEntity>> GetVouchersByIdEmployeeAsync(int EmployeeId,CancellationToken cancellationToken)
         {
             return await dbContext.Vouchers
                 .Include(x=>x.Items)
                 .Include(x => x.Employee)
-                .Where(x => x.EmployeeId == EmployeeId).ToListAsync();
+                .AsNoTracking()
+                .Where(x => x.EmployeeId == EmployeeId).ToListAsync(cancellationToken);
         }
 
-        public async Task<VoucherEntity> AddVoucherAsync(VoucherEntity entity)
+        public async Task<VoucherEntity> AddVoucherAsync(VoucherEntity entity, CancellationToken cancellationToken)
         {
             
             dbContext.Vouchers.Add(entity);
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
 
-        public async Task<VoucherEntity> UpdateVoucherAsync(int VoucherId, VoucherEntity entity) 
+        public async Task<VoucherEntity> UpdateVoucherAsync(int VoucherId, VoucherEntity entity, CancellationToken cancellationToken) 
         {
-            var vaucher = await dbContext.Vouchers.FirstOrDefaultAsync(x=> x.Id == VoucherId);
-           
-            if (vaucher is not null)
+            var voucher = await dbContext.Vouchers
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Id == VoucherId, cancellationToken);
+
+            if (voucher == null)
+                return null;
+
+            voucher.VoucherNumber = entity.VoucherNumber;
+            voucher.Date = entity.Date;
+            voucher.Description = entity.Description;
+            voucher.EmployeeId = entity.EmployeeId;
+            voucher.TotalAmount = entity.TotalAmount;
+
+            if (voucher.Items != null && voucher.Items.Any())
+                dbContext.VoucherItems.RemoveRange(voucher.Items);
+
+            if (entity.Items != null && entity.Items.Any())
             {
-                vaucher.VoucherNumber = entity.VoucherNumber;
-                vaucher.Description = entity.Description;
-                vaucher.Date = entity.Date;
-                vaucher.TotalAmount = entity.TotalAmount;
-                await dbContext.SaveChangesAsync();
+                foreach (var item in entity.Items)
+                    item.VoucherId = voucher.Id;
 
-                var vaucherItems = await dbContext.VoucherItems.Where(x=>x.VoucherId == vaucher.Id).ToListAsync();
-                if(vaucherItems.Count() > 0)
-                {
-                    foreach (var item in vaucherItems)
-                    {
-                        dbContext.VoucherItems.Remove(item);
-                        await dbContext.SaveChangesAsync();
-                    }
-
-                    foreach (var item in entity.Items)
-                    {
-                       
-                        item.VoucherId = vaucher.Id;
-                        dbContext.VoucherItems.Add(item);
-                        await dbContext.SaveChangesAsync();
-                    }
-                }
-                else
-                {
-                    foreach (var item in entity.Items)
-                    {
-                       
-                        item.VoucherId = vaucher.Id;
-                        dbContext.VoucherItems.Add(item);
-                        await dbContext.SaveChangesAsync();
-                    }
-                }
-
-                return vaucher;
-
+                await dbContext.VoucherItems.AddRangeAsync(entity.Items, cancellationToken);
+                voucher.Items = entity.Items;
             }
-            return entity;
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            return voucher; 
         }
 
-        public async Task<bool> DeleteVoucherAsync(int VoucherId)
+        public async Task<bool> DeleteVoucherAsync(int VoucherId, CancellationToken cancellationToken)
         {
             var voucher = await dbContext.Vouchers.FirstOrDefaultAsync(x => x.Id == VoucherId);
-            if (voucher is not null)
-            {
-                dbContext.Vouchers.Remove(voucher);
-                return await dbContext.SaveChangesAsync() > 0;
-            }
-            return false;
+           
+            if (voucher is null) return false;
+
+            dbContext.Vouchers.Remove(voucher);
+            return await dbContext.SaveChangesAsync(cancellationToken) > 0;
+            
+          
         }
     }
 }

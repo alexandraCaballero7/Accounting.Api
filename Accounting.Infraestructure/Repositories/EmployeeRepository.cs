@@ -10,28 +10,30 @@ namespace Accounting.Infraestructure.Repositories
 {
     public class EmployeeRepository(AccountingDbContext dbContext): IEmployeeRepository
     {
-        public async Task<IEnumerable<EmployeeEntity>>GetAllEmployeesAsync()
+        public async Task<IEnumerable<EmployeeEntity>>GetAllEmployeesAsync(CancellationToken cancellationToken)
         { 
-            return await dbContext.Employees.ToListAsync();
+            return await dbContext.Employees.AsNoTracking().ToListAsync(cancellationToken);
         }
 
-        public async Task<EmployeeEntity> GetEmployeeByIdAsync(int EmployeeId)
+        public async Task<EmployeeEntity> GetEmployeeByIdAsync(int EmployeeId, CancellationToken cancellationToken)
         {
-            return await dbContext.Employees.FirstOrDefaultAsync(x=>x.Id == EmployeeId);
+            return await dbContext.Employees
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x=>x.Id == EmployeeId, cancellationToken);
         }
 
-        public async Task<EmployeeEntity> AddEmployeeAsync(EmployeeEntity entity)
+        public async Task<EmployeeEntity> AddEmployeeAsync(EmployeeEntity entity, CancellationToken cancellationToken)
         {
          
           dbContext.Employees.Add(entity);
           
-          await dbContext.SaveChangesAsync();
+          await dbContext.SaveChangesAsync(cancellationToken);
           return entity;
         }
 
-        public async Task<EmployeeEntity> UpdateEmployeAsync(int EmployeeId, EmployeeEntity entity)
+        public async Task<EmployeeEntity> UpdateEmployeAsync(int EmployeeId, EmployeeEntity entity, CancellationToken cancellationToken)
         {
-           var employee = await dbContext.Employees.FirstOrDefaultAsync(x=> x.Id == EmployeeId);
+           var employee = await dbContext.Employees.FirstOrDefaultAsync(x=> x.Id == EmployeeId, cancellationToken);
 
             if (employee is null)
                 return null;
@@ -43,24 +45,19 @@ namespace Accounting.Infraestructure.Repositories
                 employee.HireDate = entity.HireDate;
                 employee.Salary = entity.Salary;
 
-                await dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync(cancellationToken);
                 return employee;
             
         }
 
-        public async Task<bool> DeleteEmployeeAsync(int EmployeeId)
+        public async Task<bool> DeleteEmployeeAsync(int EmployeeId, CancellationToken cancellationToken)
         {
-            var employee = await dbContext.Employees.FirstOrDefaultAsync(x => x.Id == EmployeeId);
+            var employee = await dbContext.Employees.FirstOrDefaultAsync(x => x.Id == EmployeeId, cancellationToken);
 
-            if (employee is not null)
-            {
-                dbContext.Employees.Remove(employee);
+            if (employee == null) return false;
 
-                return await dbContext.SaveChangesAsync() > 0;
-                
-            }
-
-            return false;
+            dbContext.Employees.Remove(employee);
+            return await dbContext.SaveChangesAsync(cancellationToken) > 0;
         }
 
 
