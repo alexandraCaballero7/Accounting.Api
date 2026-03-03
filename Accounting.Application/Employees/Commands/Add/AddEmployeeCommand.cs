@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Employees.DTOs;
+using Accounting.Application.Employees.Mappers;
 using Accounting.Core.Entities;
 using Accounting.Core.Interfaces;
 using MediatR;
@@ -30,18 +31,10 @@ namespace Accounting.Application.Employees.Commands.Add
                     Salary = request.Employee.Salary
                 };
 
-                var created = await _employeeRepository.AddEmployeeAsync(entity);
+                var created = await _employeeRepository.AddEmployeeAsync(entity, cancellationToken);
 
-                return new EmployeeResponse(
-                    created.Id,
-                    created.FirstName,
-                    created.LastName,
-                    created.Email,
-                    created.Phone,
-                    created.HireDate,
-                    created.Salary
-                );
-            }
+                return created.ToResponse();
+        }
         }
     }
 

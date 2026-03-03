@@ -4,7 +4,23 @@ using System.Text;
 
 namespace Accounting.Application.Vouchers.Commands.Update
 {
-    internal class UpdateVoucherRequest
+    public class UpdateVoucherRequest
     {
+      
+            public int VoucherNumber { get; set; }
+            public DateTime Date { get; set; }
+            public string? Description { get; set; }
+            public int EmployeeId { get; set; }
+
+            public ICollection<AddVoucherItemRequest> Items { get; set; }
     }
+     public class AddVoucherItemRequest
+     {
+            public string Description { get; set; } = null!;
+            public decimal Amount { get; set; }
+            public int Type { get; set; }
+     }
 }
+
+
+

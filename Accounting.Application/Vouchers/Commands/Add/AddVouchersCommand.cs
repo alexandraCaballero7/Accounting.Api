@@ -1,4 +1,6 @@
-﻿using Accounting.Application.Vouchers.DTOs;
+﻿using Accounting.Application.Exceptions;
+using Accounting.Application.Vouchers.DTOs;
+using Accounting.Application.Vouchers.Mappers;
 using Accounting.Core.Entities;
 using Accounting.Core.Interfaces;
 using MediatR;
@@ -13,45 +15,46 @@ public record AddVouchersCommand(AddVoucherRequest Voucher) : IRequest<VoucherRe
     public class AddVoucherCommandHandler : IRequestHandler<AddVouchersCommand, VoucherResponse>
     {
         private readonly IVoucherRepository _voucherRepository;
-        public AddVoucherCommandHandler(IVoucherRepository voucherRepository)
+        private readonly IEmployeeRepository _employeeRepository;
+        public AddVoucherCommandHandler(IVoucherRepository voucherRepository, IEmployeeRepository employeeRepository)
         { 
-            _voucherRepository = voucherRepository; 
+            _voucherRepository = voucherRepository;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task<VoucherResponse> Handle(AddVouchersCommand request, CancellationToken cancellationToken)
         {
-           
+            if (request.Voucher == null || request.Voucher.Items == null || !request.Voucher.Items.Any())
+                throw new BusinessException("Voucher must have at least one item");
+
+            if (request.Voucher.VoucherNumber == 0)
+                throw new BusinessException("VoucherNumber is required.");
+
+            var employeeExists = await _employeeRepository.GetEmployeeByIdAsync(request.Voucher.EmployeeId, cancellationToken);
+            if (employeeExists == null)
+                throw new NotFoundException("Employee not found");
+
             var entity = new VoucherEntity
             {
                 VoucherNumber = request.Voucher.VoucherNumber,
-                Date = request.Voucher.Date,
+                Date = request.Voucher.Date, 
                 Description = request.Voucher.Description,
                 EmployeeId = request.Voucher.EmployeeId,
-                TotalAmount = request.Voucher.Items.Sum(i => i.Amount),
-                Items = request.Voucher.Items.Select(i => new VoucherItemEntity
+                TotalAmount = request.Voucher.Items.Sum(x => x.Type == 1 ? -Math.Abs(x.Amount) : x.Amount),
+                Items = request.Voucher.Items.Select(x => new VoucherItemEntity
                 {
-                    Description = i.Description,
-                    Amount = i.Amount,
-                    Type = i.Type == 1 ? true : false
+                    Description = x.Description,
+                    Amount = x.Type == 1 ? -Math.Abs(x.Amount) : x.Amount,
+                    Type = x.Type == 1 ? true : false
                 }).ToList()
             };
 
-            var created = await _voucherRepository.AddVoucherAsync(entity);
+            var created = await _voucherRepository.AddVoucherAsync(entity,cancellationToken);
+           
+            if (created == null)
+                throw new BusinessException("Error creating voucher");
 
-            return new VoucherResponse(
-                Id: created.Id,
-                VoucherNumber: created.VoucherNumber,
-                Date: created.Date,
-                Description: created.Description,
-                EmployeeId: created.EmployeeId,
-                TotalAmount: created.TotalAmount,
-                Items: created.Items.Select(i => new VoucherItemResponse(
-                    i.VoucherId,
-                    i.Description,
-                    i.Amount,
-                    i.Type == true ? 1 : 0
-                )).ToList()
-            );
+            return created.ToResponse();
         }
     }
 }

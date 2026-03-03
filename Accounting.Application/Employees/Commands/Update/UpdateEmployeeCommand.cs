@@ -1,4 +1,6 @@
 ﻿using Accounting.Application.Employees.DTOs;
+using Accounting.Application.Employees.Mappers;
+using Accounting.Application.Exceptions;
 using Accounting.Core.Entities;
 using Accounting.Core.Interfaces;
 using MediatR;
@@ -19,14 +21,9 @@ namespace Accounting.Application.Employees.Commands.Update
         }
         public async Task<EmployeeResponse> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
-            var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(request.EmployeeId);
-
-            if (existingEmployee is null)
-                return null;
-
             var entity = new EmployeeEntity
             {
-                Id = request.Employee.Id,
+                Id = request.EmployeeId,
                 FirstName = request.Employee.FirstName,
                 LastName = request.Employee.LastName,
                 Email = request.Employee.Email,
@@ -34,16 +31,10 @@ namespace Accounting.Application.Employees.Commands.Update
                 HireDate = request.Employee.HireDate,
                 Salary = request.Employee.Salary
             };
-            var updated = await _employeeRepository.UpdateEmployeAsync(request.EmployeeId, entity);
-            return new EmployeeResponse(
-                updated.Id,
-                updated.FirstName,
-                updated.LastName,
-                updated.Email,
-                updated.Phone,
-                updated.HireDate,
-                updated.Salary
-            );
+            var updated = await _employeeRepository.UpdateEmployeAsync(request.EmployeeId, entity, cancellationToken);
+            if (updated is null)
+                throw new NotFoundException($"Employee with Id {request.EmployeeId} not found.");
+            return updated.ToResponse();
         }
     }
 }

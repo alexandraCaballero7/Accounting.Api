@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Employees.DTOs;
+using Accounting.Application.Employees.Mappers;
 using Accounting.Core.Interfaces;
 using MediatR;
 using System;
@@ -18,21 +19,9 @@ namespace Accounting.Application.Employees.Queries
             }
             public async Task<List<EmployeeResponse>> Handle(GetAllEmployeesQuery request, CancellationToken cancellationToken)
             {
-                var employees = await _employeeRepository.GetAllEmployeesAsync();
-                if (employees == null || !employees.Any())
-                {
-                    return null;    
-                }
+                var employees = await _employeeRepository.GetAllEmployeesAsync(cancellationToken);
 
-                return employees.Select(e => new EmployeeResponse(
-                    e.Id,
-                    e.FirstName,
-                    e.LastName,
-                    e.Email,
-                    e.Phone,
-                    e.HireDate,
-                    e.Salary
-                )).ToList();
+                return employees?.ToResponseList() ?? new List<EmployeeResponse>();
             }
         }   
     }

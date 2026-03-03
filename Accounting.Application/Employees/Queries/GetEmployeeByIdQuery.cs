@@ -1,4 +1,6 @@
 ﻿using Accounting.Application.Employees.DTOs;
+using Accounting.Application.Employees.Mappers;
+using Accounting.Application.Exceptions;
 using Accounting.Core.Interfaces;
 using MediatR;
 using System;
@@ -18,20 +20,11 @@ namespace Accounting.Application.Employees.Queries
             }
             public async Task<EmployeeResponse> Handle(GetEmployeeByIdQuery request, CancellationToken cancellationToken)
             {
-                var employee = await _employeeRepository.GetEmployeeByIdAsync(request.EmployeeId);
+                var employee = await _employeeRepository.GetEmployeeByIdAsync(request.EmployeeId, cancellationToken);
                 if (employee == null)
-                {
-                    return null;    
-                }
-                return new EmployeeResponse(
-                    employee.Id,
-                    employee.FirstName,
-                    employee.LastName,
-                    employee.Email,
-                    employee.Phone,
-                    employee.HireDate,
-                    employee.Salary
-                );
+                   throw new NotFoundException($"Employee with Id {request.EmployeeId} not found.");
+                
+                return employee.ToResponse();   
             }
         }
     }

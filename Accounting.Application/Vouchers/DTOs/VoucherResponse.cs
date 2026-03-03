@@ -6,19 +6,27 @@ using System.Text;
 namespace Accounting.Application.Vouchers.DTOs
 {
     public record VoucherResponse(
-        int Id,
-        int VoucherNumber,
-        DateTime Date,
-        string Description,
-        int EmployeeId,
-        Decimal TotalAmount,
-        List<VoucherItemResponse> Items
-    );
+         int VoucherId,
+         int VoucherNumber,
+         DateTime Date,
+         string Description,
+         int EmployeeId,
+         VoucherEmployeeResponse Employee,
+         Decimal TotalAmount,
+         List<VoucherItemResponse> Items
+     );
 
     public record VoucherItemResponse(
-         int VoucherId,
+         int VoucherItemId,
          string Description,
          decimal Amount,
          int Type
     );
+
+    public record VoucherEmployeeResponse(
+    int EmployeeId,
+    string FirstName,
+    string LastName
+    );
+
 }

@@ -1,4 +1,5 @@
-﻿using Accounting.Core.Interfaces;
+﻿using Accounting.Application.Exceptions;
+using Accounting.Core.Interfaces;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -20,20 +21,16 @@ namespace Accounting.Application.Employees.Commands.Delete
         }
         public async Task<bool> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
         {
-            var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(request.EmployeeId);
-            
-            if(existingEmployee == null)
-            {
-                return false; 
-            }
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(request.EmployeeId, cancellationToken);
 
-            var vouchers = await _voucherRepository.GetVouchersByIdEmployeeAsync(request.EmployeeId);
+            if (employee == null)
+                throw new NotFoundException($"Employee with Id {request.EmployeeId} not found.");
+
+            var vouchers = await _voucherRepository.GetVouchersByIdEmployeeAsync(request.EmployeeId,cancellationToken);
             if (vouchers != null && vouchers.Any())
-            {
-                return false;
-            }
+                throw new BusinessException("Cannot delete employee because they have associated vouchers.");
 
-            return await _employeeRepository.DeleteEmployeeAsync(request.EmployeeId);
+            return await _employeeRepository.DeleteEmployeeAsync(request.EmployeeId, cancellationToken);
         }
     }
 
