@@ -29,7 +29,9 @@ namespace Accounting.Application.Employees.Commands.Update
                 Email = request.Employee.Email,
                 Phone = request.Employee.Phone,
                 HireDate = request.Employee.HireDate,
-                Salary = request.Employee.Salary
+                Salary = request.Employee.Salary,
+                Department = request.Employee.Department,
+                Position = request.Employee.Position,
             };
             var updated = await _employeeRepository.UpdateEmployeAsync(request.EmployeeId, entity, cancellationToken);
             if (updated is null)

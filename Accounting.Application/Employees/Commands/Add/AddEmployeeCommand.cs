@@ -28,7 +28,9 @@ namespace Accounting.Application.Employees.Commands.Add
                     Email = request.Employee.Email,
                     Phone = request.Employee.Phone,
                     HireDate = request.Employee.HireDate,
-                    Salary = request.Employee.Salary
+                    Salary = request.Employee.Salary,
+                    Department = request.Employee.Department,
+                    Position = request.Employee.Position,
                 };
 
                 var created = await _employeeRepository.AddEmployeeAsync(entity, cancellationToken);

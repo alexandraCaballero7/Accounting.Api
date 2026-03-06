@@ -42,6 +42,8 @@ namespace Accounting.Infraestructure.Repositories
             employee.Email = entity.Email;
             employee.HireDate = entity.HireDate;
             employee.Salary = entity.Salary;
+            employee.Department = entity.Department;
+            employee.Position = entity.Position;
 
             await dbContext.SaveChangesAsync(cancellationToken);
             return employee;

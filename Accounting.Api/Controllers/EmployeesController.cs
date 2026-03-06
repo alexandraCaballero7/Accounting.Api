@@ -34,13 +34,13 @@ namespace Accounting.Api.Controllers
         }
 
         [HttpPost("")]
-        [ProducesResponseType(typeof(EmployeeResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(EmployeeResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddEmployeeAsync([FromBody] AddEmployeeRequest employee)
         {
             var result = await sender.Send(new AddEmployeeCommand(employee));
-            return CreatedAtAction(nameof(GetAllEmployeeByIdAsync), new { employeeId = result.EmployeeId }, result);
+            return Ok(result);
         }
 
         [HttpPut("{employeeId}")]

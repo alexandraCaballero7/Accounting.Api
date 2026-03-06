@@ -21,9 +21,7 @@ namespace Accounting.Application.Vouchers.Queries
             public async Task<List<VoucherResponse>> Handle(GetVouchersByEmployeeQuery request, CancellationToken cancellationToken)
             {
                 var vouchers = await _voucherRepository.GetVouchersByIdEmployeeAsync(request.employeeId, cancellationToken);
-                if (vouchers == null || !vouchers.Any())
-                    throw new NotFoundException("No vouchers found");
-                return vouchers.ToResponseList();
+                return vouchers.ToResponseList() ?? new List<VoucherResponse>();
             }
         }   
     }

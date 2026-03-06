@@ -11,7 +11,9 @@ namespace Accounting.Application.Employees.DTOs
         string Email,
         string Phone,
         DateTime HireDate,
-        decimal Salary
+        decimal Salary,
+        string Department,
+        string Position
     );
 }
 

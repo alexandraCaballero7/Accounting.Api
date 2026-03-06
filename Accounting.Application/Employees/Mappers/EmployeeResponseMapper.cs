@@ -18,7 +18,9 @@ namespace Accounting.Application.Employees.Mappers
                 employee.Email,
                 employee.Phone,
                 employee.HireDate,
-                employee.Salary
+                employee.Salary,
+                employee.Department,
+                employee.Position
             );
         }
 

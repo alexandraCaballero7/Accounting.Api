@@ -49,7 +49,7 @@ namespace Accounting.Api.Controllers
         public async Task<IActionResult> AddVoucherAsync([FromBody] AddVoucherRequest voucher)
         {
             var result = await sender.Send(new AddVouchersCommand(voucher));
-            return CreatedAtAction(nameof(GetVoucherByIdAsync), new { voucherId = result.VoucherId }, result);
+            return Ok(result);
         }
 
         [HttpPut("{voucherId}")]

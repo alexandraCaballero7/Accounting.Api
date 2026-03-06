@@ -26,5 +26,13 @@ namespace Accounting.Application.Employees.Commands.Update
         [Required(ErrorMessage = "Salary is required")]
         [Range(0.01, 10000000, ErrorMessage = "Salary must be between 0.01 and 10,000,000")]
         public decimal Salary { get; set; }
+
+        [Required(ErrorMessage = "Department is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Department must be between 2 and 100 characters")]
+        public string Department { get; set; } = null!;
+
+        [Required(ErrorMessage = "Position is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Position must be between 2 and 100 characters")]
+        public string Position { get; set; } = null!;
     }
 }
